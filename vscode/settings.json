@@ -1,0 +1,209 @@
+{
+  "workbench.sideBar.location": "right",
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "workbench.iconTheme": "monospace-idx-file-icon-theme",
+  "workbench.startupEditor": "none",
+  "workbench.settings.editor": "ui",
+  "workbench.editor.empty.hint": "hidden",
+  "workbench.list.smoothScrolling": true,
+  // Performance Settings
+  "editor.mouseWheelScrollSensitivity": 2,
+  "editor.renderLineHighlight": "gutter",
+  "workbench.reduceMotion": "on",
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/env/**": true,
+    "**/venv/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/env": true,
+    "**/venv": true
+  },
+  // Editor Basic Settings
+  "editor.fontSize": 14,
+  "editor.fontFamily": "'JetBrains Mono', Consolas, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": false,
+  "editor.cursorBlinking": "solid",
+  "editor.scrollbar.vertical": "visible",
+  "editor.smoothScrolling": true,
+  "editor.codeLensFontFamily": "'JetBrains Mono'",
+  "editor.suggestSelection": "first",
+  "editor.renderWhitespace": "boundary",
+  // Editor Code Style & Formatting
+  "editor.guides.bracketPairs": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.linkedEditing": true,
+  "editor.autoClosingBrackets": "always",
+  "editor.autoClosingComments": "always",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  // Editor Enhancements
+  "editor.stickyScroll.enabled": true,
+  "editor.guides.indentation": true,
+  "editor.guides.highlightActiveIndentation": true,
+  "editor.suggest.preview": true,
+  "editor.inlineSuggest.enabled": true,
+  // Language Specific Formatters
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[svg]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  },
+  // File Management
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "files.eol": "\n",
+  "files.maxMemoryForLargeFilesMB": 4096,
+  "files.restoreUndoStack": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  // Git Settings
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.enableCommitSigning": true,
+  "git.showPushSuccessNotification": true,
+  // Terminal Settings
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.fontFamily": "'JetBrains Mono'",
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    }
+  },
+  "terminal.integrated.gpuAcceleration": "auto",
+  "terminal.integrated.persistentSessionReviveProcess": "never",
+  // Search Settings
+  "search.smartCase": true,
+  "search.useGlobalIgnoreFiles": true,
+  // Extension Specific Settings
+  "reactSnippets.settings.importReactOnTop": false,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "redhat.telemetry.enabled": true,
+  "hediet.vscode-drawio.resizeImages": null,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "breadcrumbs.enabled": true,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false
+  },
+  // Security Settings
+  "security.workspace.trust.untrustedFiles": "open",
+  // File Associations
+  "files.associations": {
+    "**/*.COBOL*{,/*}": "cobol",
+    "**/*.COB*{,/*}": "cobol",
+    "**/*.COBCOPY*{,/*}": "cobol",
+    "**/*.COPYBOOK*{,/*}": "cobol",
+    "**/*.COPY*{,/*}": "cobol",
+    "**/*.PL1*{,/*}": "pl1",
+    "**/*.PLI*{,/*}": "pl1",
+    "**/*.INC*{,/*}": "pl1",
+    "**/*.INCLUDE*{,/*}": "pl1",
+    "**/*.JCL*{,/*}": "jcl",
+    "**/*.ASM*{,/*}": "hlasm",
+    "**/*.ASSEMBLE*{,/*}": "hlasm",
+    "**/*.HLASM*{,/*}": "hlasm",
+    "**/*.HLA*{,/*}": "hlasm",
+    "**/*.MACLIB*{,/*}": "hlasm",
+    "**/*.DBD*{,/*}": "hlasm",
+    "**/*.MFS*{,/*}": "hlasm",
+    "**/*.PCB*{,/*}": "hlasm",
+    "**/*.EXEC*{,/*}": "rexx",
+    "**/*.REXX*{,/*}": "rexx",
+    "**/*.REXXINC*{,/*}": "rexx",
+    "*.rex": "rexx",
+    "*.rexx": "rexx"
+  },
+  // Schema Configurations
+  "yaml.schemas": {
+    "file:///c%3A/Users/razeev/.vscode/extensions/ibm.zopeneditor-5.3.0/resources/zapp-schema-1.3.0.json": [
+      "zapp.yaml"
+    ],
+    "file:///c%3A/Users/razeev/.vscode/extensions/ibm.zopeneditor-5.3.0/resources/zcodeformat-schema-0.0.1.json": [
+      "zcodeformat.yaml"
+    ]
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/zapp.json"
+      ],
+      "url": "file:///c%3A/Users/razeev/.vscode/extensions/ibm.zopeneditor-5.3.0/resources/zapp-schema-1.3.0.json"
+    },
+    {
+      "fileMatch": [
+        "/zcodeformat.json"
+      ],
+      "url": "file:///c%3A/Users/razeev/.vscode/extensions/ibm.zopeneditor-5.3.0/resources/zcodeformat-schema-0.0.1.json"
+    },
+    {
+      "fileMatch": [
+        "/.docx.json"
+      ],
+      "url": "https://raw.githubusercontent.com/Mehdi-Verfaillie/docx/main/src/config/.docx.schema.json"
+    }
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  // Debugging Settings
+  "debug.toolBarLocation": "docked",
+  // "debug.inlineValues": true,
+  "debug.console.fontSize": 14,
+  "debug.showInStatusBar": "always",
+  "window.menuBarVisibility": "toggle",
+  // Enhanced Simple Browser Configuration
+  "simpleBrowser.focusLockIndicator.enabled": true,
+  "simpleBrowser.focusLockIndicator.color": "#00ff00",
+  "simpleBrowser.userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+  "simpleBrowser.showAddressBar": true,
+  "simpleBrowser.showBackButton": true,
+  "simpleBrowser.showForwardButton": true,
+  "simpleBrowser.showRefreshButton": true,
+  "simpleBrowser.showHomeButton": true,
+  "simpleBrowser.homeButtonDestination": "about:blank",
+  "simpleBrowser.toolbar.visible": true,
+  "simpleBrowser.enableScripts": true,
+  "simpleBrowser.scrollbar.visible": true,
+  "simpleBrowser.scrollbar.size": 10,
+  "simpleBrowser.defaultEncoding": "utf8",
+  "simpleBrowser.focusLockIndicator.style": "solid",
+  "zopeneditor.welcomePage.show": false
+}

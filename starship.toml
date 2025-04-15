@@ -1,0 +1,152 @@
+format = """
+[░▒▓](#a3aed2)\
+[ ](bg:#5C78FF)\
+[ ](bg:#F1F1F1) \
+$os\
+$username\
+$hostname \
+$directory \
+$time\
+$git\
+$git_branch\
+$git_status\
+$nodejs\
+$c\
+$rust\
+[ ](bg:#5C78FF)\
+[ ](bg:#F1F1F1)\
+[░▒▓](#a3aed2)\
+\n(fg:arrow)$character \
+"""
+
+scan_timeout = 1
+
+# Drop ugly default prompt characters
+[character]
+format = "$symbol"
+success_symbol = "[(green) ❯](peach)"
+error_symbol = "[(red) ❯](peach)"
+# ---
+
+[os]
+format = '[$symbol](bold #F1F1F1) '
+disabled = false
+
+[os.symbols]
+Windows = "󰍲"
+Ubuntu = "󰕈"
+SUSE = ""
+Raspbian = "󰐿"
+Mint = "󰣭"
+Macos = "󰀵"
+Manjaro = ""
+Linux = "󰌽"
+Gentoo = "󰣨"
+Fedora = "󰣛"
+Alpine = ""
+Amazon = ""
+Android = ""
+Arch = "󰣇"
+EndeavourOS = ""
+CentOS = ""
+Debian = "󰣚"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
+
+
+# ---
+
+# Shows the username
+[username]
+style_user = 'bold #A52AFF'
+style_root = 'bold #121212'
+disabled = false
+show_always = true
+
+# Shows the hostname
+[hostname]
+ssh_only = false
+format = '[$hostname](bold #3D2AFF)'
+disabled = false
+
+# Shows current directory
+[directory]
+truncation_length = 3
+truncation_symbol = '…/'
+home_symbol = '󰋜'
+read_only_style = '#A52AFF'
+read_only = '  '
+format = 'at [$path]($style)[$read_only]($read_only_style) '
+
+
+[directory.substitutions]
+"Documents" = " 󰈙 "
+"Downloads" = " "
+"Music" = " 󰝚 "
+"Pictures" = " "
+"Developer" = " 󰲋 "
+
+
+[time]
+disabled = false
+time_format = "%I:%M %p"
+style = "bg:#1d2230"
+format = ' $time '
+
+# Shows current git branch
+[git_branch]
+format = "via [$symbol$branch]($style) "
+style = "bold fg:git"
+symbol = " "
+
+[git_status]
+format = '[ $all_status$ahead_behind ]($style)'
+style = "fg:text_color bg:git"
+disabled = true
+
+# ---
+
+
+[line_break]
+disabled = false
+
+[nodejs]
+symbol = ""
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+disabled=false
+
+[python]
+disabled=false
+format = '[ ${symbol}${pyenv_prefix}(${version})( \($virtualenv\)) ]($style)'
+symbol = " "
+version_format = "${raw}"
+style = "bg:python fg:text_light"
+
+[conda]
+format = "[ $symbol$environment ]($style)"
+style = "bg:conda fg:text_light"
+ignore_base = false
+disabled = false
+symbol = " "
+
+[java]
+format = "[ $symbol$version ]($style)"
+style = "bg:java fg:text_light"
+version_format = "${raw}"
+symbol = " "
+disabled = true
+
+[c]
+format = "[ $symbol($version(-$name)) ]($style)"
+style = "bg:clang fg:text_light"
+symbol = " "
+version_format = "${raw}"
+disabled=true
+
+[rust]
+format ="[ $symbol$version ]($style)"
+style = "bg:rust fg:text_light"
+symbol = " "
+version_format = "${raw}"
+disabled=true
