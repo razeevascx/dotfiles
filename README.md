@@ -16,7 +16,7 @@ A collection of dotfiles and setup scripts for Windows development environment.
 1. Clone this repository:
 
 ```powershell
-git clone https://github.com/yourusername/dotfiles.git
+git clone https://github.com/razeevascx/dotfiles.git
 cd dotfiles
 ```
 
