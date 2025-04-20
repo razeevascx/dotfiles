@@ -1,11 +1,43 @@
 # Requires -RunAsAdministrator
+$ErrorActionPreference = 'Stop'
 
-# Check if winget is installed
+# Check if running as administrator
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "Please run as Administrator" -ForegroundColor Red
+    exit 1
+}
+
+# Function to move files to their destination
+function Move-ConfigFile {
+    param(
+        [string]$source,
+        [string]$target,
+        [switch]$CreateBackup = $true
+    )
+
+    if (Test-Path $target -and $CreateBackup) {
+        Write-Host "Backing up existing $target to $target.backup"
+        if (Test-Path "$target.backup") {
+            Remove-Item "$target.backup" -Force -Recurse
+        }
+        Move-Item -Path $target -Destination "$target.backup" -Force
+    }
+
+    # Create parent directory if it doesn't exist
+    $targetDir = Split-Path -Parent $target
+    if (-not (Test-Path $targetDir)) {
+        New-Item -ItemType Directory -Path $targetDir -Force
+    }
+
+    Write-Host "Moving configuration file from $source to $target"
+    Copy-Item -Path $source -Destination $target -Force
+}
+
+# Check and install winget if needed
 $hasWinget = Get-Command winget -ErrorAction SilentlyContinue
 if (-not $hasWinget) {
-    Write-Host "Winget is not installed. Installing Microsoft.DesktopAppInstaller..."
+    Write-Host "Installing winget..."
     $progressPreference = 'silentlyContinue'
-    Write-Information "Downloading Microsoft.DesktopAppInstaller..."
     $dlurl = 'https://aka.ms/getwinget'
     $outpath = "$env:TEMP\Microsoft.DesktopAppInstaller.msixbundle"
     Invoke-WebRequest -Uri $dlurl -OutFile $outpath
@@ -13,78 +45,84 @@ if (-not $hasWinget) {
     Remove-Item $outpath
 }
 
-# Function to create symbolic links
-function New-SymbolicLink {
-    param(
-        [string]$source,
-        [string]$target
+# Function to ensure a package is installed
+function Install-RequiredPackage {
+    param (
+        [string]$Name,
+        [string]$Id
     )
 
-    if (Test-Path $target) {
-        Write-Host "Backing up existing $target to $target.backup"
-        Move-Item -Path $target -Destination "$target.backup" -Force
+    Write-Host "Checking for $Name..."
+    $package = winget list --id $Id --exact
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Installing $Name..."
+        winget install --id $Id --exact --silent --accept-package-agreements --accept-source-agreements
     }
-
-    Write-Host "Creating symbolic link from $source to $target"
-    New-Item -ItemType SymbolicLink -Path $target -Target $source -Force
 }
 
-# 1. Install winget packages first
+# Install essential packages
+Install-RequiredPackage -Name "Windows Terminal" -Id "Microsoft.WindowsTerminal"
+Install-RequiredPackage -Name "VS Code" -Id "Microsoft.VisualStudioCode"
+Install-RequiredPackage -Name "Starship" -Id "Starship.Starship"
+
+# Install packages from packages.json
 Write-Host "Installing packages from winget..."
-winget import -i "$PSScriptRoot\application\packages.json" --accept-package-agreements --accept-source-agreements
+$packagesFile = "$PSScriptRoot\application\packages.json"
+if (Test-Path $packagesFile) {
+    winget import -i $packagesFile --accept-package-agreements --accept-source-agreements
+} else {
+    Write-Warning "packages.json not found at $packagesFile"
+}
 
-# Configure Windows Terminal settings
+# Configure Windows Terminal
 $terminalSettingsPath = "$env:LocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-New-SymbolicLink -source "$PSScriptRoot\terminal\settings.json" -target $terminalSettingsPath
+Move-ConfigFile -source "$PSScriptRoot\terminal\settings.json" -target $terminalSettingsPath
 
-# 2. Setup Visual Studio Code settings
+# Setup VS Code
 Write-Host "Setting up VS Code configuration..."
 $vscodePath = "$env:APPDATA\Code\User"
 if (!(Test-Path $vscodePath)) {
     New-Item -ItemType Directory -Path $vscodePath -Force
 }
-New-SymbolicLink -source "$PSScriptRoot\..\vscode\settings.json" -target "$vscodePath\settings.json"
-New-SymbolicLink -source "$PSScriptRoot\..\vscode\tasks.json" -target "$vscodePath\tasks.json"
-New-SymbolicLink -source "$PSScriptRoot\..\prettierrc" -target "$env:USERPROFILE\.prettierrc"
 
-# 3. Install VS Code extensions
+# VS Code settings and tasks
+Move-ConfigFile -source "$PSScriptRoot\..\vscode\settings.json" -target "$vscodePath\settings.json"
+Move-ConfigFile -source "$PSScriptRoot\..\vscode\tasks.json" -target "$vscodePath\tasks.json"
+
+# Install VS Code extensions
 Write-Host "Installing VS Code extensions..."
-Get-Content "$PSScriptRoot\..\vscode\extensions.txt" | ForEach-Object {
-    Write-Host "Installing VS Code extension: $_"
-    code --install-extension $_ --force
+$extensionsFile = "$PSScriptRoot\..\vscode\extensions.txt"
+if (Test-Path $extensionsFile) {
+    Get-Content $extensionsFile | ForEach-Object {
+        if ($_.Trim()) {
+            Write-Host "Installing VS Code extension: $_"
+            code --install-extension $_ --force
+        }
+    }
+} else {
+    Write-Warning "extensions.txt not found at $extensionsFile"
 }
 
-# Create shortcut for Windows Terminal quick launch
-$startupPath = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
-$wtScriptPath = "$PSScriptRoot\terminal\wt.ps1"
-$shortcutPath = "$startupPath\Terminal.lnk"
-
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($shortcutPath)
-$Shortcut.TargetPath = "powershell.exe"
-$Shortcut.Arguments = "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$wtScriptPath`""
-$Shortcut.Save()
-
-# 4. Setup Starship
+# Setup Starship
 Write-Host "Setting up Starship configuration..."
 $starshipConfigDir = "$env:USERPROFILE\.config"
 if (!(Test-Path $starshipConfigDir)) {
     New-Item -ItemType Directory -Path $starshipConfigDir -Force
 }
-New-SymbolicLink -source "$PSScriptRoot\..\starship.toml" -target "$starshipConfigDir\starship.toml"
+Move-ConfigFile -source "$PSScriptRoot\..\starship.toml" -target "$starshipConfigDir\starship.toml"
 
-# 5. Setup Git configuration
-Write-Host "Setting up Git configuration..."
-New-SymbolicLink -source "$PSScriptRoot\git\.gitconfig" -target "$env:USERPROFILE\.gitconfig"
-New-SymbolicLink -source "$PSScriptRoot\git\.gitignore_global" -target "$env:USERPROFILE\.gitignore_global"
-
-# Set up PowerShell profile
+# Setup PowerShell profile
 $powerShellProfileDir = "$env:USERPROFILE\Documents\PowerShell"
 if (!(Test-Path $powerShellProfileDir)) {
     New-Item -ItemType Directory -Path $powerShellProfileDir -Force
 }
 
-# Initialize Starship prompt in PowerShell profile
+# Install PowerShell modules
+Write-Host "Installing PowerShell modules..."
+Install-Module -Name Terminal-Icons -Scope CurrentUser -Force
+Install-Module -Name PSReadLine -Scope CurrentUser -Force -AllowPrerelease
+
+# Initialize PowerShell profile
 $profileContent = @"
 # Initialize Starship prompt
 Invoke-Expression (&starship init powershell)
@@ -99,8 +137,19 @@ Import-Module -Name Terminal-Icons
 # Better history
 Set-PSReadLineOption -PredictionSource History
 Set-PSReadLineOption -PredictionViewStyle ListView
+Set-PSReadLineOption -EditMode Windows
+
+# Better tab completion
+Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+
+# Better command history
+Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
 "@
 
 Set-Content -Path "$powerShellProfileDir\Microsoft.PowerShell_profile.ps1" -Value $profileContent
 
-Write-Host "Setup completed! Please restart your terminal for changes to take effect."
+Write-Host "`nSetup completed! Please restart your terminal for changes to take effect." -ForegroundColor Green
+Write-Host "You may want to configure Git with your credentials:"
+Write-Host "git config --global user.name 'Your Name'"
+Write-Host "git config --global user.email 'your@email.com'"
