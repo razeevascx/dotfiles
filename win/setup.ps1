@@ -12,10 +12,10 @@ function Move-ConfigFile {
     param(
         [string]$source,
         [string]$target,
-        [switch]$CreateBackup = $true
+        [switch]$CreateBackup
     )
 
-    if (Test-Path $target -and $CreateBackup) {
+    if ((Test-Path $target) -and $CreateBackup.IsPresent) {
         Write-Host "Backing up existing $target to $target.backup"
         if (Test-Path "$target.backup") {
             Remove-Item "$target.backup" -Force -Recurse
@@ -33,16 +33,43 @@ function Move-ConfigFile {
     Copy-Item -Path $source -Destination $target -Force
 }
 
-# Check and install winget if needed
+# Install winget if needed
 $hasWinget = Get-Command winget -ErrorAction SilentlyContinue
 if (-not $hasWinget) {
     Write-Host "Installing winget..."
     $progressPreference = 'silentlyContinue'
-    $dlurl = 'https://aka.ms/getwinget'
-    $outpath = "$env:TEMP\Microsoft.DesktopAppInstaller.msixbundle"
-    Invoke-WebRequest -Uri $dlurl -OutFile $outpath
-    Add-AppxPackage -Path $outpath
-    Remove-Item $outpath
+
+    try {
+        # Create a temporary directory
+        $tempDirectory = Join-Path $env:TEMP ([System.Guid]::NewGuid().ToString())
+        New-Item -ItemType Directory -Path $tempDirectory | Out-Null
+
+        # Download Microsoft.VCLibs
+        Write-Host "Downloading and installing Microsoft.VCLibs..."
+        $vclibsUrl = "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+        $vclibsPath = Join-Path $tempDirectory "Microsoft.VCLibs.x64.14.00.Desktop.appx"
+        Invoke-WebRequest -Uri $vclibsUrl -OutFile $vclibsPath -UseBasicParsing
+        Add-AppxPackage -Path $vclibsPath -ErrorAction SilentlyContinue
+
+        # Download App Installer (winget)
+        Write-Host "Downloading and installing App Installer (winget)..."
+        $wingetPath = Join-Path $tempDirectory "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+        Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile $wingetPath -UseBasicParsing
+
+        # Install winget
+        Add-AppxPackage -Path $wingetPath -ErrorAction Stop
+    }
+    catch {
+        Write-Warning "Failed to install winget: $_"
+        Write-Host "Please install winget manually from the Microsoft Store."
+        exit 1
+    }
+    finally {
+        # Cleanup
+        if (Test-Path $tempDirectory) {
+            Remove-Item -Path $tempDirectory -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
 }
 
 # Function to ensure a package is installed
@@ -53,10 +80,13 @@ function Install-RequiredPackage {
     )
 
     Write-Host "Checking for $Name..."
-    $package = winget list --id $Id --exact
+    winget list --id $Id --exact | Out-Null
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Installing $Name..."
         winget install --id $Id --exact --silent --accept-package-agreements --accept-source-agreements
+    }
+    else {
+        Write-Host "$Name is already installed"
     }
 }
 

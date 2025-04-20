@@ -21,24 +21,6 @@ The script will:
 3. Extract the files to `%USERPROFILE%\dotfiles`
 4. Run the setup script automatically
 
-## Manual Installation
-
-### Installation
-
-1. Clone this repository:
-
-```powershell
-git clone https://github.com/yourusername/dotfiles.git
-cd dotfiles
-```
-
-2. Run the setup script as Administrator:
-
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force
-.\win\setup.ps1
-```
-
 ### What Gets Configured
 
 - Windows Terminal with custom settings

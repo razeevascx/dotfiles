@@ -15,7 +15,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 Write-Host "`n🚀 Starting dotfiles installation..." -ForegroundColor Cyan
 
-function Download-Repository {
+function Get-Repository {
     param (
         [string]$url,
         [string]$branch,
@@ -53,7 +53,11 @@ $setupDir = "$env:USERPROFILE\dotfiles"
 
 try {
     # Download and extract the repository
-    Download-Repository -url $repoUrl -branch $branch -destination $setupDir
+    Get-Repository -url $repoUrl -branch $branch -destination $setupDir
+
+    # Set execution policy for this process
+    Write-Host "`n🔒 Setting execution policy..."
+    Set-ExecutionPolicy Bypass -Scope Process -Force
 
     # Run the main setup script
     Write-Host "`n🔧 Running setup script..."
